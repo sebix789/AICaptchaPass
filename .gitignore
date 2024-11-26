@@ -5,8 +5,16 @@
 
 # Virtual environment
 venv/
+.venv/
+.idea/
 env/
 backend/venv/
+
+**/tiny-imagenet-200/test/
+**/tiny-imagenet-200/train/
+**/tiny-imagenet-200/val/
+**/tiny-imagenet-200/wnids.txt
+**/tiny-imagenet-200/words.txt
 
 # Model Files
 *.keras
