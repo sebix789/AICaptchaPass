@@ -1,5 +1,9 @@
 import tensorflow as tf
 import os
+import sys
+
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
+from src.preprocess.prepareImage import get_train_dataset, get_val_dataset, TRAIN_DIR, VAL_DIR
 
 
 # Build the model
@@ -24,9 +28,11 @@ def build_model():
     return model
 
 
-## TODO ##
 def load_data():
-    return print("Data loaded")
+    train_dataset = get_train_dataset(TRAIN_DIR, batch_size=128)
+    val_dataset = get_val_dataset(VAL_DIR, batch_size=128)
+    
+    return train_dataset, val_dataset
 
 
 
@@ -58,7 +64,7 @@ def fine_tunning(model, train_data, test_data):
 
 
 def train_model(): 
-    train_data, test_data = load_data() ## Need to be implemented
+    train_data, test_data = load_data()
     
     model_load_path = 'captcha_classification.keras'
     weights_load_path = 'weights.keras'
@@ -87,6 +93,7 @@ def train_model():
     # Compile model
     optimizer = tf.keras.optimizers.Adam(learning_rate=0.001)
     model.compile(optimizer=optimizer, loss='categorical_crossentropy', metrics=['accuracy'])
+    print("Model compiled.")
     
     # Callbacks
     early_stopping = tf.keras.callbacks.EarlyStopping(monitor='val_loss', patience=5, restore_best_weights=True)
@@ -111,3 +118,6 @@ def train_model():
         
         
     return model, history, test_data
+    
+if __name__ == '__main__':
+    train_model()
