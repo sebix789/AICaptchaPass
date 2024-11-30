@@ -4,7 +4,7 @@ import random
 import numpy as np
 import matplotlib.pyplot as plt
 
-DATASET_DIR = os.path.abspath("src/tiny-imagenet-200")
+DATASET_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'data', 'tiny-imagenet-200'))
 TRAIN_DIR = os.path.join(DATASET_DIR, "train")
 VAL_DIR = os.path.join(DATASET_DIR, "val")
 TEST_DIR = os.path.join(DATASET_DIR, "test")
@@ -98,12 +98,12 @@ train_dataset = get_train_dataset(TRAIN_DIR, batch_size=32)
 val_dataset = get_val_dataset(VAL_DIR, batch_size=32)
 
 
-# EXAMPLE SHOW IMAGES
-for images, labels in train_dataset.take(1):
-    plt.figure(figsize=(10, 10))
-    for i in range(images.shape[0]):
-        plt.subplot(4, 8, i + 1)
-        plt.imshow(images[i].numpy())
-        plt.title(np.argmax(labels[i].numpy()))
-        plt.axis("off")
-    plt.show()
+# ### EXAMPLE SHOW IMAGES ###
+# for images, labels in train_dataset.take(1):
+#     plt.figure(figsize=(10, 10))
+#     for i in range(images.shape[0]):
+#         plt.subplot(4, 8, i + 1)
+#         plt.imshow(images[i].numpy())
+#         plt.title(np.argmax(labels[i].numpy()))
+#         plt.axis("off")
+#     plt.show()
