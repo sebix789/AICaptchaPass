@@ -1,0 +1,8 @@
+LICENSE
+README.md
+setup.py
+src/AICaptchaPass.egg-info/PKG-INFO
+src/AICaptchaPass.egg-info/SOURCES.txt
+src/AICaptchaPass.egg-info/dependency_links.txt
+src/AICaptchaPass.egg-info/top_level.txt
+src/flaskr/__init__.py
