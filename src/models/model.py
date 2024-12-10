@@ -1,6 +1,7 @@
 import tensorflow as tf
 import os
 import sys
+from metrics.metricsCNN import metrics_accuracy_and_loss
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
 from src.preprocess.prepareImage import get_train_dataset, get_val_dataset, TRAIN_DIR, VAL_DIR
@@ -120,4 +121,9 @@ def train_model():
     return model, history, test_data
     
 if __name__ == '__main__':
-    train_model()
+    model, history, test_data = train_model()
+    metrics_accuracy_and_loss(history, 'accuracy.png', 'loss.png')
+    
+    score = model.evaluate(test_data, verbose=0)
+    print('Test loss:', score[0])
+    print('Test accuracy:', score[1])
