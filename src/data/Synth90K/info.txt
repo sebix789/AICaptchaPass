@@ -1,0 +1,15 @@
+THIS DIRECTORY SHOULD CONTAIN THE Synth90K DATASET
+
+DOWNLOAD IT FROM: https://www.robots.ox.ac.uk/~vgg/research/text/
+
+THE DATASET SHOULD BE ORGANIZED IN THE FOLLOWING SUBDIRECTORIES:
+
+TRAIN/
+VAL/
+TEST/
+
+ADDITIONALLY, INCLUDE THESE FILES IN THE MAIN DIRECTORY:
+
+train_labels.txt - Contains the image paths and their corresponding labels for training
+val_labels.txt — Contains the image paths and their corresponding labels for validation
+
