@@ -1,4 +1,5 @@
 import tensorflow as tf
+from preprocess.prepareImageOCR import get_train_dataset, get_val_dataset, TRAIN_LABELS_FILE, VAL_LABELS_FILE
 
 # Model Params
 # Height, Width, Channels (for grayscale: 1)
@@ -105,6 +106,10 @@ def build_attention_ocr(input_shape, vocab_size, embedding_dim, units):
 
     return tf.keras.Model(inputs=[encoder_inputs, hidden_state_inputs, decoder_inputs], outputs=decoder_output, name="AttentionOCR")
 
+# Load datasets
+train_dataset = get_train_dataset(batch_size=32)
+val_dataset = get_val_dataset(batch_size=32)
+
 # Compile Model
 attention_ocr_model = build_attention_ocr(input_shape, vocab_size, embedding_dim, units)
 
@@ -114,3 +119,12 @@ attention_ocr_model.compile(
 )
 
 attention_ocr_model.summary()
+
+# Test Dataset Loading
+for images, labels in train_dataset.take(1):
+    for i in range(1):
+        image = images[i].numpy()
+        label = labels[i].numpy()
+        tf.print("Label:", label)
+        tf.print("Image shape:", image.shape)
+        tf.print("Image data:", image)
