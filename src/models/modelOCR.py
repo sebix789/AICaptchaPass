@@ -1,5 +1,6 @@
 import tensorflow as tf
 from preprocess.prepareImageOCR import get_train_dataset, get_val_dataset, TRAIN_LABELS_FILE, VAL_LABELS_FILE
+from metrics.metricsOCR import metrics_OCR
 
 # Model Params
 # Height, Width, Channels (for grayscale: 1)
@@ -106,25 +107,51 @@ def build_attention_ocr(input_shape, vocab_size, embedding_dim, units):
 
     return tf.keras.Model(inputs=[encoder_inputs, hidden_state_inputs, decoder_inputs], outputs=decoder_output, name="AttentionOCR")
 
-# Load datasets
-train_dataset = get_train_dataset(batch_size=32)
-val_dataset = get_val_dataset(batch_size=32)
 
-# Compile Model
-attention_ocr_model = build_attention_ocr(input_shape, vocab_size, embedding_dim, units)
+def train_model():
+    
+    # Load datasets
+    train_dataset = get_train_dataset(batch_size=32)
+    val_dataset = get_val_dataset(batch_size=32)
 
-attention_ocr_model.compile(
-    optimizer=tf.keras.optimizers.Adam(),
-    loss="sparse_categorical_crossentropy"
-)
+    # Compile Model
+    attention_ocr_model = build_attention_ocr(input_shape, vocab_size, embedding_dim, units)
 
-attention_ocr_model.summary()
+    attention_ocr_model.compile(
+        optimizer=tf.keras.optimizers.Adam(),
+        loss="sparse_categorical_crossentropy",
+        metrics=['accuracy']
+    )
+    
+    attention_ocr_model.summary()
+    
+    # Callbacks
+    early_stopping = tf.keras.callbacks.EarlyStopping(monitor='val_loss', patience=5, restore_best_weights=True)
+    reduce_lr = tf.keras.callbacks.ReduceLROnPlateau(monitor='val_loss', factor=0.2, patience=3, min_lr=0.0001)
 
-# Test Dataset Loading
-for images, labels in train_dataset.take(1):
-    for i in range(1):
-        image = images[i].numpy()
-        label = labels[i].numpy()
-        tf.print("Label:", label)
-        tf.print("Image shape:", image.shape)
-        tf.print("Image data:", image)
+    # Train model
+    history = attention_ocr_model.fit(
+        train_dataset,
+        validation_data=val_dataset,
+        epochs=50,
+        callbacks=[early_stopping, reduce_lr]
+    )
+
+    return attention_ocr_model, history, val_dataset
+
+### Test Dataset Loading ###
+# for images, labels in train_dataset.take(1):
+#     for i in range(1):
+#         image = images[i].numpy()
+#         label = labels[i].numpy()
+#         tf.print("Label:", label)
+#         tf.print("Image shape:", image.shape)
+#         tf.print("Image data:", image)
+        
+if __name__ == '__main__':
+    model, history, test_data = train_model()
+    metrics_OCR(history, 'accuracy.png', 'loss.png', 'character_accuracy.png', 'word_accuracy.png')
+    
+    score = model.evaluate(test_data)
+    print(f"Test loss: {score[0]}")
+    print(f"Test accuracy: {score[1]}")
