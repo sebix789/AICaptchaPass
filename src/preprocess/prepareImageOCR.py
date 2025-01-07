@@ -1,25 +1,65 @@
 import tensorflow as tf
 import os
 import random
-import matplotlib.pyplot as plt
-import numpy as np
-DATASET_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'data', 'Synth90K'))
-TRAIN_DIR = os.path.join(DATASET_DIR, "train")
-VAL_DIR = os.path.join(DATASET_DIR, "val")
-TEST_DIR = os.path.join(DATASET_DIR, "test")
+
+
+DATASET_DIR = '/kaggle/input/synth90k/mnt/ramdisk/max/90kDICT32px'
+ANNOTATION_FILE = os.path.join(DATASET_DIR, 'annotation.txt')
+OUTPUT_DIR = '/kaggle/working/'
+
+
+def generate_annotations(split):
+    annotation_file = os.path.join(OUTPUT_DIR, f'{split}_labels.txt')
+    
+    if os.path.exists(annotation_file):
+        return annotation_file
+    
+    # Divide data to splits
+    split_mapping = {
+        'train': 'train',
+        'val': 'val',
+        'test': 'test',
+    }
+    
+    if split not in split_mapping:
+        raise ValueError(f"Unknown split: {split}")
+
+    # Loading `annotation.txt`
+    with open(ANNOTATION_FILE, 'r') as f:
+        lines = f.readlines()
+
+    with open(annotation_file, 'w') as f_out:
+        for line in lines:
+            parts = line.strip().split(" ")
+            image_path = parts[0]
+            label = " ".join(parts[1:])
+            
+            # Verify image
+            if split_mapping[split] in image_path:
+                f_out.write(f"{image_path} {label}\n")
+
+    print(f"Annotation file created: {annotation_file}")
+    return annotation_file
 
 def preprocess_textimage(image, label, is_Training=True):
+    image = tf.cast(image, tf.float32)
+    
     if is_Training:
+        image = tf.image.resize(image, [32, 128])
+        
         image = tf.image.random_brightness(image, max_delta=0.1)
         image = tf.image.random_contrast(image, lower=0.7, upper=1.3)
+        
         image = tf.image.random_crop(image, size=[28, 96, 3])
         noise = tf.random.normal(shape=tf.shape(image), mean=0.0, stddev=0.1)
         image = tf.clip_by_value(image + noise, 0.0, 1.0)
-        rotations = random.choice([0, 1, 2, 3])  # Rotate by 0, 90, 180, or 270 degrees
+
+        # Rotate by 0, 90, 180, or 270 degrees
+        rotations = random.choice([0, 1, 2, 3])
         image = tf.image.rot90(image, k=rotations)
 
     image = image / 255.0  
-    label = tf.strings.unicode_split(label, 'UTF-8')  
+    label = tf.strings.unicode_split(label, 'UTF-8')
     return image, label
 
 def load_labels(labels_file_path):
@@ -33,8 +73,10 @@ def load_labels(labels_file_path):
             image_paths.append(image_path)
             labels.append(label)
     return image_paths, labels
+    
 
-def get_train_dataset(labels_file, batch_size=32):
+def get_train_dataset(batch_size=32):
+    labels_file = generate_annotations('train')
     image_paths, labels = load_labels(labels_file)
     dataset = tf.data.Dataset.from_tensor_slices((image_paths, labels))
 
@@ -47,8 +89,10 @@ def get_train_dataset(labels_file, batch_size=32):
     dataset = dataset.shuffle(buffer_size=1024)
     dataset = dataset.batch(batch_size)
     return dataset
+    
 
-def get_val_dataset(labels_file, batch_size=32):
+def get_val_dataset(batch_size=32):
+    labels_file = generate_annotations('val')
     image_paths, labels = load_labels(labels_file)
     dataset = tf.data.Dataset.from_tensor_slices((image_paths, labels))
 
@@ -60,12 +104,6 @@ def get_val_dataset(labels_file, batch_size=32):
     dataset = dataset.map(load_and_preprocess, num_parallel_calls=tf.data.AUTOTUNE)
     dataset = dataset.batch(batch_size)
     return dataset
-
-TRAIN_LABELS_FILE = os.path.join(DATASET_DIR, 'train_labels.txt')  
-VAL_LABELS_FILE = os.path.join(DATASET_DIR, 'val_labels.txt') 
-
-train_dataset = get_train_dataset(TRAIN_LABELS_FILE, batch_size=32)
-val_dataset = get_val_dataset(VAL_LABELS_FILE, batch_size=32)
 
 
  ### EXAMPLE SHOW IMAGES ###
