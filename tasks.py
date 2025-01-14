@@ -25,3 +25,10 @@ def run_prod(c):
 def run_test(c):
     env = env_prefix({"PYTHONPATH": "src", "FLASK_ENV": "testing"})
     c.run(f"{env} pytest src/tests")
+
+@task
+def initial_images(c):
+    env = env_prefix({"PYTHONPATH": "src"})
+    script_path = os.path.abspath(os.path.join("src", "utils", "functions", "uploadImages.py"))
+    print(f"Uruchamianie skryptu: {script_path}")
+    c.run(f"{env} python {script_path}")
