@@ -19,7 +19,15 @@
     ```commandline
     pip install -r src/requirements.txt
     ```
-4. Run
+4. Add variable environments \
+   Create file `.env` in root project folder
+   - `BACKEND_HOST` ( optional ) - backend hostname \
+   Example: `http://127.0.0.1:5000`
+   - `DATABASE_URI` ( required ) - uri to mongodb database ( tested only in remote database but in local should work too) \
+   Example: `mongodb+srv://<login>:<password>@test.jrzu6.mongodb.net/?retryWrites=true&w=majority&appName=test`
+   - `DATABASE_NAME` - database name \
+   Example: `test`
+5. Run
    - Run development mode
     ```
     invoke run-dev
@@ -27,6 +35,11 @@
    - Run tests
     ```
     invoke run-test
+    ```
+   - Upload photos to database <br> 
+      In file `uploadImages` you can change what categories and how many elements you want to upload
+    ```
+    invoke initial-images
     ```
 
 <br>
