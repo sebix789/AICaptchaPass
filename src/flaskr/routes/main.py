@@ -1,7 +1,9 @@
 from flask import Blueprint
 from src.flaskr import db
+from src.flaskr.routes.testPrediction import testPrediction
 
 main = Blueprint('main', __name__)
+main.register_blueprint(testPrediction, url_prefix='/api')
 
 @main.route('/')
 def index():
