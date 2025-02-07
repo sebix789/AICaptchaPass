@@ -1,10 +1,20 @@
 import tensorflow as tf
 import os
 import sys
-from metrics.metricsCNN import metrics_accuracy_and_loss
+from src.metrics.metricsCNN import metrics_accuracy_and_loss
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
 from src.preprocess.prepareImage import get_train_dataset, get_val_dataset, TRAIN_DIR, VAL_DIR
+
+
+# Load model
+def load_model():   
+    model_path = 'src/models/model_after_further_training2.keras'
+    if not os.path.exists(model_path):
+        raise FileNotFoundError(f"The model file {model_path} does not exist.")
+    
+    model = tf.keras.models.load_model(model_path)
+    return model
 
 
 # Build the model
