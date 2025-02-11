@@ -4,6 +4,7 @@ from src.flaskr.routes.categories import categories
 from src.flaskr.routes.main import main
 from src.flaskr.routes.imageCaptcha import imageCaptcha
 from src.flaskr.routes.image import image
+from src.flaskr.routes.testPrediction import testPrediction
 import os
 from pymongo.errors import ConnectionFailure
 from dotenv import load_dotenv
@@ -46,6 +47,7 @@ def create_app(test_config=None):
     app.register_blueprint(categories)
     app.register_blueprint(imageCaptcha)
     app.register_blueprint(image)
+    app.register_blueprint(testPrediction, url_prefix='/api')
 
     if __name__ == '__main__':
         app.run(host='0.0.0.0', port=5000)
