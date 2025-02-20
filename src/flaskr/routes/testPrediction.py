@@ -6,10 +6,18 @@ from datetime import datetime
 from gridfs import GridFS
 import random
 from src.flaskr.db import get_db
-# from src.models.model import load_model
 from src.utils.functions.labelMap import format_prediction
 
 testPrediction = Blueprint('testPrediction', __name__)
+
+# Load model
+def load_model():   
+    model_path = 'src/models/model_after_further_training2.keras'
+    if not os.path.exists(model_path):
+        raise FileNotFoundError(f"The model file {model_path} does not exist.")
+    
+    model = tf.keras.models.load_model(model_path)
+    return model
 
 def get_random_image():
     db = get_db()
