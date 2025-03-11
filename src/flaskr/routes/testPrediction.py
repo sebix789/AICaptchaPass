@@ -65,14 +65,15 @@ def test_prediction():
         image_data = get_random_image()
 
         # Load and preprocess image
-        image = tf.image.decode_jpeg(image_data['data'], channels=3)
-        image = tf.image.resize(image, [299, 299])
-        image = image / 255.0
-        image = tf.expand_dims(image, 0)  # Add batch dimension
+        with tf.device('/GPU:0'):  # Użyj GPU dla operacji przetwarzania obrazu i predykcji
+            image = tf.image.decode_jpeg(image_data['data'], channels=3)
+            image = tf.image.resize(image, [299, 299])
+            image = image / 255.0
+            image = tf.expand_dims(image, 0)  # Add batch dimension
 
-        # Load model and make prediction
-        model = load_model()
-        prediction = model.predict(image)
+            # Load model and make prediction
+            model = load_model()
+            prediction = model.predict(image)
 
         pred_class = str(prediction.argmax())
         formatted_prediction = format_prediction(pred_class)
