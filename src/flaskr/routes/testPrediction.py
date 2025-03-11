@@ -11,11 +11,11 @@ from src.utils.functions.labelMap import format_prediction
 testPrediction = Blueprint('testPrediction', __name__)
 
 # Load model
-def load_model():   
+def load_model():
     model_path = 'src/models/model_after_further_training2.keras'
     if not os.path.exists(model_path):
         raise FileNotFoundError(f"The model file {model_path} does not exist.")
-    
+
     model = tf.keras.models.load_model(model_path)
     return model
 
@@ -58,28 +58,32 @@ def save_to_json(image_data, prediction):
 
 @testPrediction.route('/test-prediction')
 def test_prediction():
+    BACKEND_HOST = os.environ.get('BACKEND_HOST', 'localhost:5000')
+
     try:
         # Get random image
-#         image_data = get_random_image()
-#
-#         # Load and preprocess image
-#         image = tf.image.decode_jpeg(image_data['data'], channels=3)
-#         image = tf.image.resize(image, [299, 299])
-#         image = image / 255.0
-#         image = tf.expand_dims(image, 0)  # Add batch dimension
-#
-#         # Load model and make prediction
-#         model = load_model()
-#         prediction = model.predict(image)
-#
-#         pred_class = str(prediction.argmax())
-#         formatted_prediction = format_prediction(pred_class)
-#
-#         # Save results
-#         result = save_to_json(image_data, formatted_prediction)
-#
-#         return jsonify(result)
-          return jsonify('{}')
+        image_data = get_random_image()
+
+        # Load and preprocess image
+        image = tf.image.decode_jpeg(image_data['data'], channels=3)
+        image = tf.image.resize(image, [299, 299])
+        image = image / 255.0
+        image = tf.expand_dims(image, 0)  # Add batch dimension
+
+        # Load model and make prediction
+        model = load_model()
+        prediction = model.predict(image)
+
+        pred_class = str(prediction.argmax())
+        formatted_prediction = format_prediction(pred_class)
+
+        # Save results
+        result = save_to_json(image_data, formatted_prediction)
+
+        # Add imageUrl to result object
+        result["imageUrl"] = f'{BACKEND_HOST}/image/category_{result["true_label"]}/{result["image_id"]}'
+
+        return jsonify(result)
 
     except Exception as e:
         return jsonify({"error": f"Prediction failed: {str(e)}"}), 500
