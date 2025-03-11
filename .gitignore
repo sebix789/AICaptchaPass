@@ -17,7 +17,7 @@ backend/venv/
 **/tiny-imagenet-200/words.txt
 
 # Model Files
-*.keras
+#*.keras
 
 # Python cache files
 __pycache__/

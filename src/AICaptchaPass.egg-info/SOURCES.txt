@@ -6,3 +6,14 @@ src/AICaptchaPass.egg-info/SOURCES.txt
 src/AICaptchaPass.egg-info/dependency_links.txt
 src/AICaptchaPass.egg-info/top_level.txt
 src/flaskr/__init__.py
+src/flaskr/db.py
+src/flaskr/routes/__init__.py
+src/flaskr/routes/categories.py
+src/flaskr/routes/image.py
+src/flaskr/routes/imageCaptcha.py
+src/flaskr/routes/main.py
+src/flaskr/routes/testPrediction.py
+src/flaskr/services/__init__.py
+src/flaskr/services/generateImageCaptcha.py
+src/tests/__init__.py
+src/tests/test_app.py
