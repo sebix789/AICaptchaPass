@@ -1,4 +1,6 @@
 from flask import Flask
+import tensorflow as tf
+
 from src.flaskr.db import get_db
 from src.flaskr.routes.categories import categories
 from src.flaskr.routes.main import main
@@ -9,6 +11,7 @@ import os
 from pymongo.errors import ConnectionFailure
 from dotenv import load_dotenv
 
+tf.config.set_visible_devices([], 'GPU')
 
 load_dotenv()
 
