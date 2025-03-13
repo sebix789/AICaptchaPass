@@ -8,29 +8,24 @@ from io import BytesIO
 load_dotenv()
 
 
-DATABASE_URI = os.environ.get('DATABASE_URI', '')
-DATABASE_NAME = os.environ.get('DATABASE_NAME', '')
-#TODO Add path
-#IMAGE_DIR = 
-#LABELS_FILE =
+DATABASE_URI = "mongodb://localhost:27017"  
+DATABASE_NAME = "captchaTest"  
+IMAGE_DIR = "src\data\Synth90K\cap" 
+
 
 client = pymongo.MongoClient(DATABASE_URI)
 db = client[DATABASE_NAME]
 
 fs = gridfs.GridFS(db, collection="captchas")
 
+def read_label(filename):
+    return os.path.splitext(filename)[0]
 
-def read_labels_from_file(labels_file):
-    """Reads the labels file and returns a list of (filename, label) tuples."""
-    labels = []
-    with open(labels_file, "r") as file:
-        for line in file:
-            filename, label = line.strip().split()
-            labels.append((filename, label))
-    return labels
+    
 
 
-def upload_image_to_mongodb(image_filename, label):
+
+def upload_image_to_mongodb(image_filename):
     """Uploads image to GridFS and stores the label in a MongoDB collection."""
     image_path = os.path.join(IMAGE_DIR, image_filename)
     
@@ -45,6 +40,11 @@ def upload_image_to_mongodb(image_filename, label):
 
   
     image_id = fs.put(img_byte_arr, filename=image_filename)
+    label = read_label(image_filename) 
+    if not label:
+        print(f"Skipping {image_filename}: Could not extract label.")
+        return
+
 
    
     captchas_collection = db['captchas']
@@ -56,13 +56,12 @@ def upload_image_to_mongodb(image_filename, label):
     print(f"Uploaded {image_filename} with label '{label}' to the database!")
 
 
-def upload_captchas(labels_file):
+def upload_captchas():
     """Uploads all images and labels to MongoDB."""
-    labels = read_labels_from_file(labels_file)
-
-    for filename, label in labels:
-        upload_image_to_mongodb(filename, label)
+    for filename in os.listdir(IMAGE_DIR):
+        if filename.lower().endswith(('.jpg', '.png', '.jpeg')):
+            upload_image_to_mongodb(filename)
 
 
 if __name__ == "__main__":
-    upload_captchas(LABELS_FILE)
+    upload_captchas()
