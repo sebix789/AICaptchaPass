@@ -18,6 +18,7 @@ backend/venv/
 
 # Model Files
 *.keras
+*.pdparams
 
 # Python cache files
 __pycache__/

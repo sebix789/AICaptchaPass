@@ -1,11 +1,14 @@
 from flask import Flask
+from flask_cors import CORS
 from src.flaskr.db import get_db
 from src.flaskr.routes.categories import categories
 from src.flaskr.routes.main import main
 from src.flaskr.routes.imageCaptcha import imageCaptcha
 from src.flaskr.routes.image import image
 from src.flaskr.routes.codeCaptcha import codeCaptcha
+from src.flaskr.routes.codePredict import codePredict
 from src.flaskr.routes.testPrediction import testPrediction
+from src.flaskr.routes.testOCR import testOCR
 import os
 from pymongo.errors import ConnectionFailure
 from dotenv import load_dotenv
@@ -16,6 +19,7 @@ load_dotenv()
 
 def create_app(test_config=None):
     app = Flask(__name__, instance_relative_config=True)
+    CORS(app, origins=["http://localhost:3000"])  
     app.config.from_mapping(
         SECRET_KEY='dev',
     )
@@ -49,7 +53,9 @@ def create_app(test_config=None):
     app.register_blueprint(imageCaptcha)
     app.register_blueprint(image)
     app.register_blueprint(codeCaptcha)
+    app.register_blueprint(codePredict)
     app.register_blueprint(testPrediction, url_prefix='/api')
+    app.register_blueprint(testOCR, url_prefix='/api')
 
     if __name__ == '__main__':
         app.run(host='0.0.0.0', port=5000)
